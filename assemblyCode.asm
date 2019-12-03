@@ -49,3 +49,54 @@ L2:
 ArrayFill endp 
 END main 
 
+title "Sample Final Exam 2017 Question 1"
+
+Include Irvine32.inc 
+
+.data 
+n DWORD ?
+k DWORD ?
+result DWORD 00000000h
+.code 
+
+main PROC 
+    push n ; [ebp + 12], ecx, this is the first parameter  
+    push k : [ebp + 8], ebx, this is the second parameter 
+    call recu ; calling recu(n - 1, k - 1)
+main ENDP 
+
+recu PROC 
+
+recu ENDP 
+    push ebp 
+    mov ebp, esp 
+    mov ebx, [ebp + 8] ; ebx contains n 
+    mov ecx, [ebp + 12] ; ecx contains k 
+    cmp ecx, 0 
+    je L0 ; if k = 0 then quit with return value of 1
+    cmp ecx, ebx 
+    je L0 ; if k = n then quit with return value of 1  
+    dec ebx ; n = n - 1
+    cmp ecx, ebx 
+    jne L1 ; if k != n then jump to recursive case, else jump to base case  
+L0: ; this is the base case 
+    mov eax, 1 ; return value 1 in eax when quitting
+    jmp Quit 
+L1: ; this is the recursive case 
+    dec ebx ; n = n - 1
+    dec ecx ; k = k - 1
+    push ebx ; second parameter
+    push ecx ; first parameter 
+    call recu ; calling recu(n - 1, k - 1)
+    push eax ; push return value of recu(n - 1, k - 1) onto stack 
+    dec ebx  ; n = n - 1
+    push ebx ; first parameter for recu(n - 1, k)
+    push ecx ; second parameter for recu(n - 1, k)
+    call recu ; calling recu(n - 1, k)
+    push eax ; push return value of recu(n - 1, k) onto stack 
+    pop ebx ; restore return value of recu(n - 1, k - 1) onto edx 
+    add eax, ebx ; add return value of recu(n - 1, k - 1) with return value of recu(n - 1, k)
+Quit:
+    pop ebp 
+    ret 8
+END main 
